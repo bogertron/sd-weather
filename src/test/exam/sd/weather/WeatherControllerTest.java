@@ -1,26 +1,24 @@
 package exam.sd.weather;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import exam.sd.weather.bean.Location;
 import exam.sd.weather.bean.Weather;
 import exam.sd.weather.controller.WeatherController;
 import exam.sd.weather.exception.DuplicateWeatherException;
 import exam.sd.weather.service.WeatherService;
-import org.apache.tomcat.jni.Local;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.mockito.Mockito.doThrow;
 
-import java.time.LocalDate;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.mockito.BDDMockito.given;
@@ -28,11 +26,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static sun.plugin2.util.PojoUtil.toJson;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(WeatherController.class)
-@TestPropertySource(locations="classpath:resources/application.properties")
 public class WeatherControllerTest {
 
     @Autowired
@@ -118,7 +114,7 @@ public class WeatherControllerTest {
         l1.setLat(4);
         l1.setLon(3);
         l1.setState("State1");
-        w1.setDate(LocalDate.now());
+        w1.setDate(new Date(0));
         w1.setId(1);
         w1.setLocation(l1);
         w1.setTemperature(new float[]{5,5,5,5,5,5,5,5,5,5,5,5});
@@ -129,7 +125,7 @@ public class WeatherControllerTest {
         l2.setLat(4);
         l2.setLon(3);
         l2.setState("State2");
-        w2.setDate(LocalDate.of(2020, 1, 1));
+        w2.setDate(new Date(0));
         w2.setId(2);
         w2.setLocation(l2);
         w2.setTemperature(new float[]{5,5,5,5,5,5,5,5,5,5,5,5});
@@ -155,16 +151,19 @@ public class WeatherControllerTest {
         l1.setLat(4);
         l1.setLon(3);
         l1.setState("State1");
-        w1.setDate(LocalDate.of(2020, 1, 1));
+        w1.setDate(new Date(0));
         w1.setId(1);
         w1.setLocation(l1);
         w1.setTemperature(new float[]{5,5,5,5,5,5,5,5,5,5,5,5});
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(w1);
 
         doThrow(new DuplicateWeatherException()).when(service).createWeather(w1);
 
         mvc.perform(post("/weather")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(w1)))
+                .content(json))
                 .andExpect(status().isBadRequest());
     }
 
@@ -180,11 +179,14 @@ public class WeatherControllerTest {
         l1.setLat(4);
         l1.setLon(3);
         l1.setState("State1");
-        w1.setDate(LocalDate.of(2020, 1, 1));
+        w1.setDate(new Date(0));
         w1.setId(1);
         w1.setLocation(l1);
         w1.setTemperature(new float[]{5,5,5,5,5,5,5,5,5,5,5,5});
-        String json = toJson(w1);
+        ObjectMapper mapper = new ObjectMapper();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        mapper.setDateFormat(df);
+        String json = mapper.writeValueAsString(w1);
         System.out.println(json);
         mvc.perform(post("/weather")
                 .contentType(MediaType.APPLICATION_JSON)

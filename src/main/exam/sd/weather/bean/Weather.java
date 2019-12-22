@@ -1,23 +1,37 @@
 package exam.sd.weather.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import exam.sd.weather.validation.TemperatureArrayConstraint;
 
-import java.time.LocalDate;
+import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Date;
 
+@Entity
 public class Weather {
-    private int id;
+    @Id
+    @NotNull(message = "Id is required")
+    private Long id;
 
     @JsonFormat(pattern="yyyy-MM-dd")
+    @NotNull(message = "date is required")
     private Date date;
-    private float[] temperature;
+    @NotNull(message = "temperature is required")
+    @ElementCollection
+    @OrderColumn(name = "temperature_order")
+    @TemperatureArrayConstraint
+    private BigDecimal[] temperature;
+    @NotNull(message = "location is required")
+    @Valid
     private Location location;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -30,11 +44,11 @@ public class Weather {
         this.date = date;
     }
 
-    public float[] getTemperature() {
+    public BigDecimal[] getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(float[] temperature) {
+    public void setTemperature(BigDecimal[] temperature) {
         this.temperature = temperature;
     }
 
@@ -51,7 +65,7 @@ public class Weather {
 
         if (o instanceof Weather) {
             Weather that = (Weather) o;
-            result = this.id == that.id;
+            result = this.id.equals(that.id);
         }
         return result;
     }

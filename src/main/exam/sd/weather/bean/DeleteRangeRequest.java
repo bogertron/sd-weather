@@ -7,31 +7,31 @@ import java.util.Date;
 
 public class DeleteRangeRequest {
 
-    private LocalDate start;
-    private LocalDate end;
+    private Date start;
+    private Date end;
     private float latitude;
     private float longitude;
 
-    public DeleteRangeRequest(LocalDate start, LocalDate  end, float latitude, float longitude) {
+    public DeleteRangeRequest(Date start, Date  end, float latitude, float longitude) {
         this.start = start;
         this.end = end;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public LocalDate getStart() {
+    public Date getStart() {
         return start;
     }
 
-    public void setStart(LocalDate start) {
+    public void setStart(Date start) {
         this.start = start;
     }
 
-    public LocalDate getEnd() {
+    public Date getEnd() {
         return end;
     }
 
-    public void setEnd(LocalDate end) {
+    public void setEnd(Date end) {
         this.end = end;
     }
 

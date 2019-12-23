@@ -77,17 +77,17 @@ public class WeatherClient {
         }
     }
 
-    private LocalDate readDate(String message)  throws IOException {
-        LocalDate result = null;
+    private Date readDate(String message)  throws IOException {
+        Date result = null;
         String dateFormat = "yyyy-MM-dd";
         String input = "";
-
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         while(result == null) {
             System.out.println(message + "(" + dateFormat + ")");
             try {
                 input = scanner.readLine();
-                result = LocalDate.parse(input);
-            } catch (DateTimeParseException pe) {
+                result = sdf.parse(input);
+            } catch (ParseException pe) {
                 System.out.println("Unable to parse " + input);
                 pe.printStackTrace();
             }

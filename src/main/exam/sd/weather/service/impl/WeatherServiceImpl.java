@@ -22,8 +22,8 @@ public class WeatherServiceImpl implements WeatherService {
     public void delete(DeleteRangeRequest request) {
         List<Weather> weathers = new LinkedList<>();
         for (Weather weather: list) {
-            if (weather.getDate().isAfter(request.getStart()) &&
-                    weather.getDate().isBefore(request.getEnd()) &&
+            if (weather.getDate().after(request.getStart()) &&
+                    weather.getDate().before(request.getEnd()) &&
                     weather.getLocation().getLat() == request.getLatitude() &&
                     weather.getLocation().getLon() == request.getLongitude()) {
                 weathers.add((weather));

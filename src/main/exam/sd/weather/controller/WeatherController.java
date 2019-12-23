@@ -25,8 +25,8 @@ public class WeatherController {
     }
 
     @RequestMapping(value = "/erase", params = {"startDate", "endDate", "lat", "lon"})
-    public void eraseRange(@RequestParam("start")LocalDate startDate,
-                           @RequestParam("end") LocalDate endDate,
+    public void eraseRange(@RequestParam("start")Date startDate,
+                           @RequestParam("end") Date endDate,
                            @RequestParam("lat") float latitute,
                            @RequestParam("lon") float longitude) {
 

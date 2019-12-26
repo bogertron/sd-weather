@@ -1,7 +1,6 @@
 package exam.sd.weather.controller;
 
 import exam.sd.weather.bean.DeleteRangeRequest;
-import exam.sd.weather.bean.NoWeatherMessage;
 import exam.sd.weather.bean.Weather;
 import exam.sd.weather.exception.DuplicateWeatherException;
 import exam.sd.weather.exception.NoWeatherException;
@@ -71,8 +70,11 @@ public class WeatherController {
 
     @ExceptionHandler(NoWeatherException.class)
     @ResponseStatus(HttpStatus.OK)
-    public @ResponseBody NoWeatherMessage handleNoWeather(NoWeatherException ex) {
-        return new NoWeatherMessage();
+    public @ResponseBody Map<String, String> handleNoWeather(NoWeatherException ex) {
+
+        Map<String, String> result = new HashMap<>();
+        result.put("message","There is no weather data");
+        return result;
     }
 
     /**

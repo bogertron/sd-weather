@@ -20,6 +20,7 @@ public class Weather {
     private Date date;
     @NotNull(message = "temperature is required")
     @ElementCollection
+    @CollectionTable(name = "weather_temperature", joinColumns = @JoinColumn(name = "weather_id"))
     @OrderColumn(name = "temperature_order")
     @TemperatureArrayConstraint
     private BigDecimal[] temperature;

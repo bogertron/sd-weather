@@ -18,12 +18,14 @@ public class Weather {
     @JsonFormat(pattern="yyyy-MM-dd")
     @NotNull(message = "date is required")
     private Date date;
+
     @NotNull(message = "temperature is required")
     @ElementCollection
     @CollectionTable(name = "weather_temperature", joinColumns = @JoinColumn(name = "weather_id"))
     @OrderColumn(name = "temperature_order")
     @TemperatureArrayConstraint
     private BigDecimal[] temperature;
+
     @NotNull(message = "location is required")
     @Valid
     private Location location;
@@ -36,7 +38,6 @@ public class Weather {
         this.id = id;
     }
 
-    @JsonFormat(pattern="yyyy-MM-dd")
     public Date getDate() {
         return date;
     }

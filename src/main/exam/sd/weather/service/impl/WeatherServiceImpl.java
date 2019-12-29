@@ -57,13 +57,8 @@ public class WeatherServiceImpl implements WeatherService {
     @Override
     public List<Weather> getAll() {
         List<Weather> result;
-        Iterable<Weather> weathers = weatherRepository.findAll();
-        result = StreamSupport.stream(weathers.spliterator(), false).sorted(new Comparator<Weather>() {
-            @Override
-            public int compare(Weather o1, Weather o2) {
-                return o1.getId().compareTo(o2.getId());
-            }
-        }).collect(Collectors.toList());
+        result = weatherRepository.findAllByOrderByIdAsc();
+
         return result;
     }
 

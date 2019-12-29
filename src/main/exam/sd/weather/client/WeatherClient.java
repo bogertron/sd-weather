@@ -11,10 +11,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -79,17 +80,18 @@ public class WeatherClient {
         }
     }
 
-    private Date readDate(String message)  throws IOException {
-        Date result = null;
+    private LocalDate readDate(String message)  throws IOException {
+        LocalDate result = null;
         String dateFormat = "yyyy-MM-dd";
         String input = "";
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
         while(result == null) {
             System.out.println(message + "(" + dateFormat + ")");
             try {
                 input = scanner.readLine();
-                result = sdf.parse(input);
-            } catch (ParseException pe) {
+
+                result = LocalDate.parse(input, formatter);
+            } catch (DateTimeParseException pe) {
                 System.out.println("Unable to parse " + input);
                 pe.printStackTrace();
             }
@@ -183,8 +185,8 @@ public class WeatherClient {
 
     public void deleteRange() throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date start = readDate("Provide start");
-        Date end = readDate("Provide end");
+        LocalDate start = readDate("Provide start");
+        LocalDate end = readDate("Provide end");
 
         BigDecimal lat = readBigDecimal("Provide lat");
         BigDecimal lon = readBigDecimal("Provide lon");

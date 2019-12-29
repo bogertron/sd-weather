@@ -16,7 +16,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +33,8 @@ public class WeatherController {
 
     @RequestMapping(value = "/erase", method= RequestMethod.DELETE,
             params = {"start", "end", "lat", "lon"})
-    public void eraseRange(@RequestParam(name = "start") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                           @RequestParam(name = "end") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+    public void eraseRange(@RequestParam(name = "start") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+                           @RequestParam(name = "end") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
                            @RequestParam(name = "lat") @Digits(integer = 2, fraction = 4) BigDecimal latitude,
                            @RequestParam(name = "lon") @Digits(integer = 3, fraction = 4) BigDecimal longitude) {
 

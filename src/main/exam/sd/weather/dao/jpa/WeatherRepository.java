@@ -7,13 +7,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface WeatherRepository extends JpaRepository<Weather, Long> {
 
     @Query("SELECT w FROM Weather w LEFT JOIN FETCH w.location l WHERE w.date>=:start AND w.date <=:end AND l.lon=:longitude AND l.lat=:latitude")
-    List<Weather> findByRange(@Param("start") Date start, @Param("end") Date end,
-                       @Param("latitude") BigDecimal latitude, @Param("longitude") BigDecimal longitude);
+    List<Weather> findByRange(@Param("start") LocalDate start, @Param("end") LocalDate end,
+                              @Param("latitude") BigDecimal latitude, @Param("longitude") BigDecimal longitude);
 }

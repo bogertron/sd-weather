@@ -1,35 +1,35 @@
 package exam.sd.weather.bean;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class DeleteRangeRequest {
 
-    private Date start;
-    private Date end;
+    private LocalDate start;
+    private LocalDate end;
     private BigDecimal latitude;
     private BigDecimal longitude;
 
-    public DeleteRangeRequest(Date start, Date  end, BigDecimal latitude, BigDecimal longitude) {
+    public DeleteRangeRequest(LocalDate start, LocalDate end, BigDecimal latitude, BigDecimal longitude) {
         this.start = start;
         this.end = end;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public Date getStart() {
+    public LocalDate getStart() {
         return start;
     }
 
-    public void setStart(Date start) {
+    public void setStart(LocalDate start) {
         this.start = start;
     }
 
-    public Date getEnd() {
+    public LocalDate getEnd() {
         return end;
     }
 
-    public void setEnd(Date end) {
+    public void setEnd(LocalDate end) {
         this.end = end;
     }
 

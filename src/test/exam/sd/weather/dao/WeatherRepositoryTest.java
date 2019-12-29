@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -23,7 +24,6 @@ public class WeatherRepositoryTest {
 
     @Autowired
     private WeatherRepository weatherRepository;
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Before
     public void before() {
@@ -58,7 +58,7 @@ public class WeatherRepositoryTest {
         Weather w1 = new Weather();
         w1.setTemperature(temp);
         w1.setLocation(l1);
-        w1.setDate(sdf.parse("2019-01-03"));
+        w1.setDate(LocalDate.of(2020, 1, 2));
         w1.setId(3L);
 
         weatherRepository.save(w1);
@@ -72,7 +72,7 @@ public class WeatherRepositoryTest {
         Weather w2 = new Weather();
         w2.setTemperature(temp);
         w2.setLocation(l2);
-        w2.setDate(sdf.parse("2019-01-05"));
+        w2.setDate(LocalDate.of(2020, 1, 5));
         w2.setId(4L);
 
         weatherRepository.save(w2);
@@ -80,7 +80,8 @@ public class WeatherRepositoryTest {
         List<Weather> weatherList = weatherRepository.findAll();
         assertEquals(2, weatherList.size());
 
-        List<Weather> toDelete = weatherRepository.findByRange(sdf.parse("2019-01-02"), sdf.parse("2019-01-04"),
+        List<Weather> toDelete = weatherRepository.findByRange(LocalDate.of(2020, 1, 2),
+                LocalDate.of(2020,1, 4),
                 l1.getLat(), l1.getLon());
 
         weatherRepository.deleteAll(toDelete);
@@ -112,7 +113,7 @@ public class WeatherRepositoryTest {
         }
         w1.setTemperature(temp);
         w1.setLocation(l1);
-        w1.setDate(sdf.parse("2019-01-03"));
+        w1.setDate(LocalDate.now());
         w1.setId(3L);
 
         weatherRepository.save(w1);

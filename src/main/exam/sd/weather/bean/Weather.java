@@ -7,7 +7,7 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 public class Weather {
@@ -17,7 +17,7 @@ public class Weather {
 
     @JsonFormat(pattern="yyyy-MM-dd")
     @NotNull(message = "date is required")
-    private Date date;
+    private LocalDate date;
 
     @NotNull(message = "temperature is required")
     @ElementCollection
@@ -38,11 +38,11 @@ public class Weather {
         this.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

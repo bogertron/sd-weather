@@ -1,6 +1,5 @@
 package exam.sd.weather.validation;
 
-import exam.sd.weather.validation.TemperatureValidator;
 import org.junit.Test;
 
 import java.math.BigDecimal;

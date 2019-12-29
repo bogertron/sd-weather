@@ -5,6 +5,7 @@ import exam.sd.weather.bean.Location;
 import exam.sd.weather.bean.Weather;
 import exam.sd.weather.exception.DuplicateWeatherException;
 import exam.sd.weather.service.WeatherService;
+import exam.sd.weather.util.JacksonSerializer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.mockito.Mockito.doThrow;
-
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -89,7 +90,7 @@ public class WeatherControllerTest {
         l1.setLat(new BigDecimal(4));
         l1.setLon(new BigDecimal(3));
         l1.setState("State1");
-        w1.setDate(new Date(0));
+        w1.setDate(LocalDate.of(2020, 1, 1));
         w1.setId(1L);
         w1.setLocation(l1);
         BigDecimal[] temp = new BigDecimal[24];
@@ -104,7 +105,7 @@ public class WeatherControllerTest {
         l2.setLat(new BigDecimal(4));
         l2.setLon(new BigDecimal(3));
         l2.setState("State2");
-        w2.setDate(new Date(0));
+        w2.setDate(LocalDate.of(2020, 1, 1));
         w2.setId(2L);
         w2.setLocation(l2);
         w2.setTemperature(temp);
@@ -130,7 +131,7 @@ public class WeatherControllerTest {
         l1.setLat(new BigDecimal(4));
         l1.setLon(new BigDecimal(3));
         l1.setState("State1");
-        w1.setDate(new Date(0));
+        w1.setDate(LocalDate.of(2020, 1, 1));
         w1.setId(1L);
         w1.setLocation(l1);
         BigDecimal[] temp = new BigDecimal[24];
@@ -162,7 +163,7 @@ public class WeatherControllerTest {
         l1.setLat(new BigDecimal(4));
         l1.setLon(new BigDecimal(3));
         l1.setState("State1");
-        w1.setDate(new Date(0));
+        w1.setDate(LocalDate.of(2020, 1, 1));
         w1.setId(1L);
         w1.setLocation(l1);
         BigDecimal[] temp = new BigDecimal[24];
@@ -170,11 +171,8 @@ public class WeatherControllerTest {
             temp[i] = new BigDecimal(5);
         }
         w1.setTemperature(temp);
-        ObjectMapper mapper = new ObjectMapper();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        mapper.setDateFormat(df);
-        String json = mapper.writeValueAsString(w1);
-        System.out.println(json);
+        String json = JacksonSerializer.serializeWithDate(w1);
+
         mvc.perform(post("/weather")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))

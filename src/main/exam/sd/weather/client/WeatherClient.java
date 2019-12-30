@@ -4,20 +4,20 @@ import exam.sd.weather.bean.Location;
 import exam.sd.weather.bean.Weather;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.ParseException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Client class for end to end testing of weather service
@@ -52,42 +52,46 @@ public class WeatherClient {
         boolean cont = true;
         while (cont) {
             printUsage();
-            input = readInt("");
-            switch (input) {
-                case 1:
-                    delete();
-                    break;
-                case 2:
-                    deleteRange();
-                    break;
-                case 3:
-                    createNew();
-                    break;
-                case 4:
-                    listAll();
-                    break;
-                case 5:
-                    printUsage();
-                    break;
-                default:
-                    cont = false;
-                    break;
+            Long result = readLong("");
+            if (result != null) {
+                input = result.intValue();
+                switch (input) {
+                    case 1:
+                        delete();
+                        break;
+                    case 2:
+                        deleteRange();
+                        break;
+                    case 3:
+                        createNew();
+                        break;
+                    case 4:
+                        listAll();
+                        break;
+                    case 5:
+                        printUsage();
+                        break;
+                    default:
+                        cont = false;
+                        break;
+                }
             }
 
         }
     }
 
-    private Date readDate(String message)  throws IOException {
-        Date result = null;
+    private LocalDate readDate(String message)  throws IOException {
+        LocalDate result = null;
         String dateFormat = "yyyy-MM-dd";
         String input = "";
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
         while(result == null) {
             System.out.println(message + "(" + dateFormat + ")");
             try {
                 input = scanner.readLine();
-                result = sdf.parse(input);
-            } catch (ParseException pe) {
+
+                result = LocalDate.parse(input, formatter);
+            } catch (DateTimeParseException pe) {
                 System.out.println("Unable to parse " + input);
                 pe.printStackTrace();
             }
@@ -96,15 +100,18 @@ public class WeatherClient {
         return result;
     }
 
-    private int readInt(String message)  throws IOException {
-        int result = Integer.MIN_VALUE;
+    private Long readLong(String message)  throws IOException {
+        Long result = null;
 
-        while (result == Integer.MIN_VALUE) {
+        while (result == null) {
             System.out.println(message);
             String input = scanner.readLine();
 
+            if (input.trim().toLowerCase().equals("n")) {
+                return null;
+            }
             try {
-                result = Integer.parseInt(input);
+                result = Long.parseLong(input);
             } catch (NumberFormatException nfe) {
                 nfe.printStackTrace();
             }
@@ -118,16 +125,15 @@ public class WeatherClient {
         return scanner.readLine();
     }
 
-    private float readfloat(String message)  throws IOException {
-        float result = Float.MIN_VALUE;
-        System.out.println(message);
+    private BigDecimal readBigDecimal(String message)  throws IOException {
+        BigDecimal result = null;
 
-        while (result == Integer.MIN_VALUE) {
+        while (result == null) {
             System.out.println(message);
             String input = scanner.readLine();
 
             try {
-                result = Float.parseFloat(input);
+                result = new BigDecimal(input);
             } catch (NumberFormatException nfe) {
                 nfe.printStackTrace();
             }
@@ -135,8 +141,8 @@ public class WeatherClient {
         return result;
     }
 
-    private float[] readFloatArray(String message) throws IOException {
-        List<Float> floats = new ArrayList<>();
+    private BigDecimal[] readBigDecimalArray(String message) throws IOException {
+        List<BigDecimal> floats = new ArrayList<>();
 
 
 
@@ -146,13 +152,19 @@ public class WeatherClient {
 
                 String input = scanner.readLine();
 
-                floats.add(Float.parseFloat(input));
+                floats.add(new BigDecimal(input));
             }
         } catch (NumberFormatException nfe) {
             // safe to ignore
         }
 
-        float[] result = new float[floats.size()];
+        // backfill with the last value
+        BigDecimal v = floats.get(floats.size() - 1);
+        while (floats.size() < 24) {
+            floats.add(v);
+        }
+
+        BigDecimal[] result = new BigDecimal[floats.size()];
         for (int i = 0; i < floats.size(); i++) {
             result[i] = floats.get(i);
         }
@@ -161,32 +173,59 @@ public class WeatherClient {
 
 
     public void delete() {
-
+        String url = "http://" + this.host + "/erase";
+        try {
+            restTemplate.delete(url, new HashMap<>());
+        } catch (HttpClientErrorException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println(ex.getResponseBodyAsString());
+            ex.printStackTrace();
+        }
     }
 
-    public void deleteRange() {
+    public void deleteRange() throws IOException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        LocalDate start = readDate("Provide start");
+        LocalDate end = readDate("Provide end");
 
+        BigDecimal lat = readBigDecimal("Provide lat");
+        BigDecimal lon = readBigDecimal("Provide lon");
+
+        String url = String.format("http://%s/erase?start=%s&end=%s&lat=%s&lon=%s",
+                this.host, sdf.format(start), sdf.format(end), lat, lon);
+        try {
+            restTemplate.delete(url, new HashMap<>());
+        } catch (HttpClientErrorException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println(ex.getResponseBodyAsString());
+            ex.printStackTrace();
+        }
     }
 
     public void createNew()  throws IOException {
         Location location = new Location();
         Weather weather = new Weather();
-        weather.setId(readInt("Provide an id"));
+        weather.setId(readLong("Provide an id"));
         weather.setDate(readDate("Provide a date"));
 
-        location.setLat(readfloat("Provide a latitude"));
-        location.setLon(readfloat("Provide a longitude"));
+        location.setLat(readBigDecimal("Provide a latitude"));
+        location.setLon(readBigDecimal("Provide a longitude"));
         location.setCity(readString("Provide a city"));
         location.setState(readString("Provide a State"));
 
         weather.setLocation(location);
-        weather.setTemperature(readFloatArray("Enter a bunch of floats (enter non-number to end)"));
+        weather.setTemperature(readBigDecimalArray("Enter a bunch of floats (enter non-number to end)"));
 
         String url = "http://" + this.host + "/weather";
         HttpEntity<Weather> request = new HttpEntity<>(weather);
-        ResponseEntity<Void> response = restTemplate.postForEntity(url, request, Void.class);
-
-        System.out.println("Response code: " + response.getStatusCodeValue());
+        try {
+            ResponseEntity<Void> response = restTemplate.postForEntity(url, request, Void.class);
+            System.out.println("Response code: " + response.getStatusCodeValue());
+        } catch (HttpClientErrorException ex) {
+            System.out.println(ex.getMessage());
+            System.out.println(ex.getResponseBodyAsString());
+            ex.printStackTrace();
+        }
     }
 
     public void listAll() {

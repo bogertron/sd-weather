@@ -2,47 +2,77 @@ package exam.sd.weather.service.impl;
 
 import exam.sd.weather.bean.DeleteRangeRequest;
 import exam.sd.weather.bean.Weather;
+import exam.sd.weather.dao.jpa.WeatherRepository;
+import exam.sd.weather.exception.DuplicateWeatherException;
 import exam.sd.weather.service.WeatherService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+@Service
 public class WeatherServiceImpl implements WeatherService {
 
+    @Autowired
+    private WeatherRepository weatherRepository;
 
-    private List<Weather> list = new ArrayList<Weather>();
+    public WeatherServiceImpl(WeatherRepository weatherRepo) {
+        this.weatherRepository = weatherRepo;
+    }
 
+    /**
+     * Delete all weather information
+     */
     @Override
     public void deleteAll() {
-        list.clear();
+        weatherRepository.deleteAll();
     }
 
+    /**
+     * Delete weather information which is inside the request
+     * @param request critera for weather information getting deleted
+     */
+    @Transactional
     @Override
     public void delete(DeleteRangeRequest request) {
-        List<Weather> weathers = new LinkedList<>();
-        for (Weather weather: list) {
-            if (weather.getDate().after(request.getStart()) &&
-                    weather.getDate().before(request.getEnd()) &&
-                    weather.getLocation().getLat() == request.getLatitude() &&
-                    weather.getLocation().getLon() == request.getLongitude()) {
-                weathers.add((weather));
-            }
-        }
-
-        for (Weather weather : weathers) {
-            list.remove(weather);
-        }
-
+        /*
+         * Ideally, we would issue just delete from the repository, but there was a trade-off between storing
+         * the temperature as a blob or an element collection. Went with element collection, and need to
+         * retrieve the objects then delete
+         */
+        List<Weather> entitiesToDelete = weatherRepository.findByRange(request.getStart(), request.getEnd(),
+                request.getLatitude(), request.getLongitude());
+        weatherRepository.deleteAll(entitiesToDelete);
     }
 
+    /**
+     * Retrieve all weather information
+     * @return list of all weather information sorted by the id column
+     */
+    @Transactional(readOnly = true)
     @Override
     public List<Weather> getAll() {
-        return list;
+        List<Weather> result;
+        result = weatherRepository.findAllByOrderByIdAsc();
+
+        return result;
     }
 
+    /**
+     * Create a new weather object
+     * @param newWeather new weather information to attempt to save
+     */
+    @Transactional
     @Override
-    public void createWeather(Weather newWeather) {
-        list.add(newWeather);
+    public void createWeather(Weather newWeather) throws DuplicateWeatherException {
+        if (!weatherRepository.existsById((newWeather.getId()))) {
+            weatherRepository.save(newWeather);
+        } else {
+            throw new DuplicateWeatherException();
+        }
     }
 }

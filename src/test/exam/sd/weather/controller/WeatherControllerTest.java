@@ -1,11 +1,11 @@
-package exam.sd.weather;
+package exam.sd.weather.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import exam.sd.weather.bean.Location;
 import exam.sd.weather.bean.Weather;
-import exam.sd.weather.controller.WeatherController;
 import exam.sd.weather.exception.DuplicateWeatherException;
 import exam.sd.weather.service.WeatherService;
+import exam.sd.weather.util.JacksonSerializer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.mockito.Mockito.doThrow;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -71,35 +72,10 @@ public class WeatherControllerTest {
     }
 
     @Test
-    public void deleteRange_testAllParams() throws Exception {
+    public void deleteRange_verify() throws Exception {
         ResultActions ra = deleteRange("start=2019-01-01&end=2019-01-02&lat=11&lon=222")
                 .andExpect(status().isOk());
     }
-
-    @Test
-    public void deleteRange_testNoLat() throws Exception {
-        ResultActions ra = deleteRange("start=2019-01-01&end=2019-01-02&lat=11")
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void deleteRange_testNoLon() throws Exception {
-        ResultActions ra = deleteRange("start=2019-01-01&end=2019-01-02&lon=11")
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void deleteRange_testNoStart() throws Exception {
-        ResultActions ra = deleteRange("end=2019-01-02&lat=11&lon=222")
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void deleteRange_testNoEnd() throws Exception {
-        ResultActions ra = deleteRange("start=2019-01-02&lat=11&lon=222")
-                .andExpect(status().isOk());
-    }
-
 
     /**
      * Verify that the get all weather is well formatted when there is data present
@@ -111,24 +87,28 @@ public class WeatherControllerTest {
         Weather w1 = new Weather();
         Location l1 = new Location();
         l1.setCity("City1");
-        l1.setLat(4);
-        l1.setLon(3);
+        l1.setLat(new BigDecimal(4));
+        l1.setLon(new BigDecimal(3));
         l1.setState("State1");
-        w1.setDate(new Date(0));
-        w1.setId(1);
+        w1.setDate(LocalDate.of(2020, 1, 1));
+        w1.setId(1L);
         w1.setLocation(l1);
-        w1.setTemperature(new float[]{5,5,5,5,5,5,5,5,5,5,5,5});
+        BigDecimal[] temp = new BigDecimal[24];
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = new BigDecimal(5);
+        }
+        w1.setTemperature(temp);
         weathers.add(w1);
         Weather w2 = new Weather();
         Location l2 = new Location();
         l2.setCity("City2");
-        l2.setLat(4);
-        l2.setLon(3);
+        l2.setLat(new BigDecimal(4));
+        l2.setLon(new BigDecimal(3));
         l2.setState("State2");
-        w2.setDate(new Date(0));
-        w2.setId(2);
+        w2.setDate(LocalDate.of(2020, 1, 1));
+        w2.setId(2L);
         w2.setLocation(l2);
-        w2.setTemperature(new float[]{5,5,5,5,5,5,5,5,5,5,5,5});
+        w2.setTemperature(temp);
         weathers.add(w2);
 
         given(service.getAll()).willReturn(weathers);
@@ -148,13 +128,17 @@ public class WeatherControllerTest {
         Weather w1 = new Weather();
         Location l1 = new Location();
         l1.setCity("City1");
-        l1.setLat(4);
-        l1.setLon(3);
+        l1.setLat(new BigDecimal(4));
+        l1.setLon(new BigDecimal(3));
         l1.setState("State1");
-        w1.setDate(new Date(0));
-        w1.setId(1);
+        w1.setDate(LocalDate.of(2020, 1, 1));
+        w1.setId(1L);
         w1.setLocation(l1);
-        w1.setTemperature(new float[]{5,5,5,5,5,5,5,5,5,5,5,5});
+        BigDecimal[] temp = new BigDecimal[24];
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = new BigDecimal(5);
+        }
+        w1.setTemperature(temp);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(w1);
@@ -176,18 +160,19 @@ public class WeatherControllerTest {
         Weather w1 = new Weather();
         Location l1 = new Location();
         l1.setCity("City1");
-        l1.setLat(4);
-        l1.setLon(3);
+        l1.setLat(new BigDecimal(4));
+        l1.setLon(new BigDecimal(3));
         l1.setState("State1");
-        w1.setDate(new Date(0));
-        w1.setId(1);
+        w1.setDate(LocalDate.of(2020, 1, 1));
+        w1.setId(1L);
         w1.setLocation(l1);
-        w1.setTemperature(new float[]{5,5,5,5,5,5,5,5,5,5,5,5});
-        ObjectMapper mapper = new ObjectMapper();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        mapper.setDateFormat(df);
-        String json = mapper.writeValueAsString(w1);
-        System.out.println(json);
+        BigDecimal[] temp = new BigDecimal[24];
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = new BigDecimal(5);
+        }
+        w1.setTemperature(temp);
+        String json = JacksonSerializer.serializeWithDate(w1);
+
         mvc.perform(post("/weather")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json))

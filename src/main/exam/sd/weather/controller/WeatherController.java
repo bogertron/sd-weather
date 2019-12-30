@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -44,10 +46,22 @@ public class WeatherController {
      */
     @RequestMapping(value = "/erase", method= RequestMethod.DELETE,
             params = {"start", "end", "lat", "lon"})
-    public void eraseRange(@RequestParam(name = "start") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-                           @RequestParam(name = "end") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-                           @RequestParam(name = "lat") @Digits(integer = 2, fraction = 4) BigDecimal latitude,
-                           @RequestParam(name = "lon") @Digits(integer = 3, fraction = 4) BigDecimal longitude) {
+    public void eraseRange(@RequestParam(name = "start")
+                           @DateTimeFormat(pattern = "yyyy-MM-dd")
+                           LocalDate startDate,
+                           @RequestParam(name = "end")
+                           @DateTimeFormat(pattern = "yyyy-MM-dd")
+                           LocalDate endDate,
+                           @RequestParam(name = "lat")
+                           @Digits(integer = 2, fraction = 4)
+                           @DecimalMin(value = "-90", message = "Lat must be at least -90")
+                           @DecimalMax(value = "90", message = "Lat cannot be larger than 90")
+                           BigDecimal latitude,
+                           @RequestParam(name = "lon")
+                           @Digits(integer = 3, fraction = 4)
+                           @DecimalMin( value = "-180", message = "Lon must be at least -180")
+                           @DecimalMax(value = "180", message = "Lon cannot be larger than 180")
+                           BigDecimal longitude) {
 
         logger.trace("Delete range requested", startDate, endDate, latitude, longitude);
         DeleteRangeRequest request = new DeleteRangeRequest(startDate, endDate, latitude, longitude);

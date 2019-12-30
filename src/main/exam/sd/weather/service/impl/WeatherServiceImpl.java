@@ -2,13 +2,18 @@ package exam.sd.weather.service.impl;
 
 import exam.sd.weather.bean.DeleteRangeRequest;
 import exam.sd.weather.bean.Weather;
+import exam.sd.weather.controller.WeatherController;
 import exam.sd.weather.dao.jpa.WeatherRepository;
 import exam.sd.weather.exception.DuplicateWeatherException;
+import exam.sd.weather.exception.WeatherException;
 import exam.sd.weather.service.WeatherService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.PersistenceException;
 import java.util.List;
 
 @Service
@@ -16,6 +21,8 @@ public class WeatherServiceImpl implements WeatherService {
 
     @Autowired
     private WeatherRepository weatherRepository;
+
+    private static Logger logger = LoggerFactory.getLogger(WeatherController.class);
 
     public WeatherServiceImpl(WeatherRepository weatherRepo) {
         this.weatherRepository = weatherRepo;
@@ -26,7 +33,12 @@ public class WeatherServiceImpl implements WeatherService {
      */
     @Override
     public void deleteAll() {
-        weatherRepository.deleteAll();
+        try {
+            weatherRepository.deleteAll();
+        } catch (PersistenceException pe) {
+            logger.error("Failed to delete all", pe);
+            throw new WeatherException("Error attempting to delete all");
+        }
     }
 
     /**
@@ -41,9 +53,14 @@ public class WeatherServiceImpl implements WeatherService {
          * the temperature as a blob or an element collection. Went with element collection, and need to
          * retrieve the objects then delete
          */
-        List<Weather> entitiesToDelete = weatherRepository.findByRange(request.getStart(), request.getEnd(),
-                request.getLatitude(), request.getLongitude());
-        weatherRepository.deleteAll(entitiesToDelete);
+        try {
+            List<Weather> entitiesToDelete = weatherRepository.findByRange(request.getStart(), request.getEnd(),
+                    request.getLatitude(), request.getLongitude());
+            weatherRepository.deleteAll(entitiesToDelete);
+        } catch (PersistenceException pe) {
+            logger.error("Failed to delete range", pe);
+            throw new WeatherException("Failed to delete range");
+        }
     }
 
     /**
@@ -54,7 +71,12 @@ public class WeatherServiceImpl implements WeatherService {
     @Override
     public List<Weather> getAll() {
         List<Weather> result;
-        result = weatherRepository.findAllByOrderByIdAsc();
+        try {
+            result = weatherRepository.findAllByOrderByIdAsc();
+        } catch (PersistenceException pe) {
+            logger.error("Failed to load all weather data", pe);
+            throw new WeatherException("Unable to load all weather information");
+        }
 
         return result;
     }
@@ -66,10 +88,15 @@ public class WeatherServiceImpl implements WeatherService {
     @Transactional
     @Override
     public void createWeather(Weather newWeather) throws DuplicateWeatherException {
-        if (!weatherRepository.existsById((newWeather.getId()))) {
-            weatherRepository.save(newWeather);
-        } else {
-            throw new DuplicateWeatherException();
+        try {
+            if (!weatherRepository.existsById((newWeather.getId()))) {
+                weatherRepository.save(newWeather);
+            } else {
+                throw new DuplicateWeatherException();
+            }
+        } catch (PersistenceException pe) {
+            logger.error("Failed to create new weather", pe);
+            throw new WeatherException("Unable to create new weather");
         }
     }
 }

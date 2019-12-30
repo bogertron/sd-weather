@@ -57,6 +57,7 @@ public class WeatherServiceImpl implements WeatherService {
             List<Weather> entitiesToDelete = weatherRepository.findByRange(request.getStart(), request.getEnd(),
                     request.getLatitude(), request.getLongitude());
             weatherRepository.deleteAll(entitiesToDelete);
+            logger.trace("Deleted {} weather points", entitiesToDelete.size());
         } catch (PersistenceException pe) {
             logger.error("Failed to delete range", pe);
             throw new WeatherException("Failed to delete range");

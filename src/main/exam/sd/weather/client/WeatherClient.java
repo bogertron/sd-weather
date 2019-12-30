@@ -184,7 +184,7 @@ public class WeatherClient {
     }
 
     public void deleteRange() throws IOException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate start = readDate("Provide start");
         LocalDate end = readDate("Provide end");
 
@@ -192,7 +192,7 @@ public class WeatherClient {
         BigDecimal lon = readBigDecimal("Provide lon");
 
         String url = String.format("http://%s/erase?start=%s&end=%s&lat=%s&lon=%s",
-                this.host, sdf.format(start), sdf.format(end), lat, lon);
+                this.host, formatter.format(start), formatter.format(end), lat, lon);
         try {
             restTemplate.delete(url, new HashMap<>());
         } catch (HttpClientErrorException ex) {

@@ -63,7 +63,7 @@ public class WeatherController {
                            @DecimalMax(value = "180", message = "Lon cannot be larger than 180")
                            BigDecimal longitude) {
 
-        logger.trace("Delete range requested", startDate, endDate, latitude, longitude);
+        logger.trace("Delete range requested start[{}] end[{}] lat[{}] lon[{}]", startDate, endDate, latitude, longitude);
         DeleteRangeRequest request = new DeleteRangeRequest(startDate, endDate, latitude, longitude);
         this.weatherService.delete(request);
     }

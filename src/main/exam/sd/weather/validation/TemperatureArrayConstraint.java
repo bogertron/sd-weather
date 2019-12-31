@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TemperatureArrayConstraint {
-    String message() default "Temperature array can only have 23 entries, must be between [-200, 200] and " +
+    String message() default "Temperature array can only have 24 entries, must be between [-200, 200] and " +
             "cannot have more than 1 decimal precision";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

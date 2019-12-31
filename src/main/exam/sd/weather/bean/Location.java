@@ -1,10 +1,7 @@
 package exam.sd.weather.bean;
 
 import javax.persistence.Embeddable;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 @Embeddable
@@ -19,8 +16,12 @@ public class Location {
     @DecimalMax(value = "180", message = "Lon cannot be larger than 180")
     @Digits(integer = 3, fraction=4, message = "lon must be between -180 and 180 and only have at most 4 decimal places")
     private BigDecimal lon;
+    // according to wikipedia, the longest city name is 176 characters long, lets just use 255
+    @Size(max = 255, message = "city must be 255 characters or less")
     @NotBlank(message = "city must be have a value")
     private String city;
+    // states won't be this long, but leave some space
+    @Size(max = 255, message = "state must be 255 characters or less")
     @NotBlank(message = "state must be have a value")
     private String state;
 

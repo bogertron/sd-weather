@@ -158,10 +158,16 @@ public class WeatherClient {
             // safe to ignore
         }
 
-        // backfill with the last value
-        BigDecimal v = floats.get(floats.size() - 1);
-        while (floats.size() < 24) {
-            floats.add(v);
+        if (floats.size() < 24) {
+            System.out.println("Would you like to backfill the array with the last number provided? (y/n)");
+
+            String input = scanner.readLine();
+            if (input.toLowerCase().equals("y")) {
+                BigDecimal v = floats.get(floats.size() - 1);
+                while (floats.size() < 24) {
+                    floats.add(v);
+                }
+            }
         }
 
         BigDecimal[] result = new BigDecimal[floats.size()];

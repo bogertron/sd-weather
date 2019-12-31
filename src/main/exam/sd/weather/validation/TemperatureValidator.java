@@ -23,9 +23,9 @@ public class TemperatureValidator implements ConstraintValidator<TemperatureArra
             for (BigDecimal dec : s) {
                 if (dec.scale() > 1) {
                     result = false;
-                } else if (dec.compareTo(MAX_TEMPERATURE) == 1) {
+                } else if (dec.compareTo(MAX_TEMPERATURE) > 0) {
                     result = false;
-                } else if (dec.compareTo(MIN_TEMPERATURE) == -1) {
+                } else if (dec.compareTo(MIN_TEMPERATURE) < 0) {
                     result = false;
                 }
             }

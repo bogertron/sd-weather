@@ -50,7 +50,8 @@ public class WeatherControllerTest {
         mvc.perform(get("/weather")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").exists());
+                .andExpect(jsonPath("$.message").exists())
+                .andExpect(jsonPath("$.message").value(WeatherController.NO_WEATHER_MESSAGE));
     }
 
     /**

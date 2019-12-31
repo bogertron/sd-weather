@@ -32,6 +32,7 @@ public class WeatherController {
     private WeatherService weatherService;
 
     private static Logger logger = LoggerFactory.getLogger(WeatherController.class);
+    public static final String NO_WEATHER_MESSAGE = "There is no weather data";
 
     public WeatherController(WeatherService weatherService) {
         this.weatherService = weatherService;
@@ -113,15 +114,18 @@ public class WeatherController {
     /**
      * When no weather data is loaded, need to return a different object type with
      * a clear message
-     * @param ex
-     * @return
+     * @param ex Exception raised by controller when no weather data has been loaded
+     * @return message indicating there is no weather
      */
     @ExceptionHandler(NoWeatherException.class)
     @ResponseStatus(HttpStatus.OK)
     public @ResponseBody Map<String, String> handleNoWeather(NoWeatherException ex) {
-
+        /*
+         * Could have attached the response status to the exception, but it would have failed to
+         * meet the expected output as defined
+         */
         Map<String, String> result = new HashMap<>();
-        result.put("message","There is no weather data");
+        result.put("message", NO_WEATHER_MESSAGE);
         return result;
     }
 

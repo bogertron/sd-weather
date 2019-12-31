@@ -5,6 +5,7 @@ import exam.sd.weather.validation.TemperatureArrayConstraint;
 
 import javax.persistence.*;
 import javax.validation.Valid;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -60,15 +61,5 @@ public class Weather {
 
     public void setLocation(Location location) {
         this.location = location;
-    }
-
-    public boolean equals(Object o) {
-        boolean result = false;
-
-        if (o instanceof Weather) {
-            Weather that = (Weather) o;
-            result = this.id.equals(that.id);
-        }
-        return result;
     }
 }

@@ -1,17 +1,17 @@
 package exam.sd.weather.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import exam.sd.weather.validation.TemperatureArrayConstraint;
 
 import javax.persistence.*;
 import javax.validation.Valid;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Weather {
+    public final static int TEMPERATURE_COUNT = 24;
     @Id
     @NotNull(message = "Id is required")
     private Long id;
@@ -24,8 +24,15 @@ public class Weather {
     @ElementCollection
     @CollectionTable(name = "weather_temperature", joinColumns = @JoinColumn(name = "weather_id"))
     @OrderColumn(name = "temperature_order")
-    @TemperatureArrayConstraint
-    private BigDecimal[] temperature;
+    @Size(min = TEMPERATURE_COUNT, max = TEMPERATURE_COUNT, message = "Temperature must have 24 values")
+    @Column(name = "temperature", precision = 4, scale = 1)
+    // for reference of documented ranges: https://www.space.com/17816-earth-temperature.html
+    // set limits to next 100 just in case
+    private List<
+            @DecimalMin(value = "-200", message = "temperature cannot be less than -200")
+            @DecimalMax(value = "200", message = "temperature cannot be greater then 200")
+            @Digits(integer = 3, fraction = 1, message = "temperature cannot have more than 1 decimal point")
+            BigDecimal> temperature;
 
     @NotNull(message = "location is required")
     @Valid
@@ -47,11 +54,11 @@ public class Weather {
         this.date = date;
     }
 
-    public BigDecimal[] getTemperature() {
+    public List<BigDecimal> getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(BigDecimal[] temperature) {
+    public void setTemperature(List<BigDecimal> temperature) {
         this.temperature = temperature;
     }
 

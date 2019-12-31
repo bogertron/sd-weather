@@ -1,5 +1,6 @@
 package exam.sd.weather.service;
 
+import exam.sd.weather.bean.DeleteRangeRequest;
 import exam.sd.weather.bean.Weather;
 import exam.sd.weather.dao.jpa.WeatherRepository;
 import exam.sd.weather.exception.DuplicateWeatherException;
@@ -7,6 +8,9 @@ import exam.sd.weather.service.impl.WeatherServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -25,6 +29,19 @@ public class WeatherServiceTest {
         WeatherService service = new WeatherServiceImpl(repository);
         service.deleteAll();
         verify(repository).deleteAll();
+    }
+
+    @Test
+    public void repository_verifyDeleteRangeParameters() {
+        WeatherRepository repository = mock(WeatherRepository.class);
+        WeatherService service = new WeatherServiceImpl(repository);
+        LocalDate start = LocalDate.of(2020, 1, 1);
+        LocalDate end = LocalDate.of(2020, 1, 1);
+        BigDecimal lat = new BigDecimal("33");
+        BigDecimal lon = new BigDecimal("33");
+        DeleteRangeRequest request = new DeleteRangeRequest(start, end, lat, lon);
+        service.delete(request);
+        verify(repository).findByRange(start, end, lat, lon);
     }
 
     /**
@@ -59,6 +76,5 @@ public class WeatherServiceTest {
         } catch (DuplicateWeatherException dwe) {
             fail("Duplicate weather exception incorrectly thrown");
         }
-
     }
 }

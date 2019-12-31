@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -50,9 +51,9 @@ public class WeatherRepositoryTest {
         l1.setLat(new BigDecimal((22)));
         l1.setLon(new BigDecimal((22)));
 
-        BigDecimal[] temp = new BigDecimal[24];
-        for (int idx = 0; idx < temp.length; idx++) {
-            temp[idx] = new BigDecimal(44);
+        List<BigDecimal> temp = new LinkedList<>();
+        for (int idx = 0; idx < Weather.TEMPERATURE_COUNT; idx++) {
+            temp.add(new BigDecimal(44));
         }
 
         Weather w1 = new Weather();
@@ -107,9 +108,9 @@ public class WeatherRepositoryTest {
         l1.setLon(new BigDecimal(22));
 
         Weather w1 = new Weather();
-        BigDecimal[] temp = new BigDecimal[24];
-        for (int idx = 0; idx < temp.length; idx++) {
-            temp[idx] = new BigDecimal(44);
+        List<BigDecimal> temp = new LinkedList<>();
+        for (int idx = 0; idx < Weather.TEMPERATURE_COUNT; idx++) {
+            temp.add(new BigDecimal(44));
         }
         w1.setTemperature(temp);
         w1.setLocation(l1);

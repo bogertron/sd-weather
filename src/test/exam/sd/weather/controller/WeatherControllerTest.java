@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -94,9 +95,9 @@ public class WeatherControllerTest {
         w1.setDate(LocalDate.of(2020, 1, 1));
         w1.setId(1L);
         w1.setLocation(l1);
-        BigDecimal[] temp = new BigDecimal[24];
-        for (int i = 0; i < temp.length; i++) {
-            temp[i] = new BigDecimal(5);
+        List<BigDecimal> temp = new LinkedList<>();
+        for (int i = 0; i < Weather.TEMPERATURE_COUNT; i++) {
+            temp.add(new BigDecimal(5));
         }
         w1.setTemperature(temp);
         weathers.add(w1);
@@ -135,9 +136,9 @@ public class WeatherControllerTest {
         w1.setDate(LocalDate.of(2020, 1, 1));
         w1.setId(1L);
         w1.setLocation(l1);
-        BigDecimal[] temp = new BigDecimal[24];
-        for (int i = 0; i < temp.length; i++) {
-            temp[i] = new BigDecimal(5);
+        List<BigDecimal> temp = new LinkedList<>();
+        for (int i = 0; i < Weather.TEMPERATURE_COUNT; i++) {
+            temp.add(new BigDecimal(5));
         }
         w1.setTemperature(temp);
 
@@ -167,9 +168,9 @@ public class WeatherControllerTest {
         w1.setDate(LocalDate.of(2020, 1, 1));
         w1.setId(1L);
         w1.setLocation(l1);
-        BigDecimal[] temp = new BigDecimal[24];
-        for (int i = 0; i < temp.length; i++) {
-            temp[i] = new BigDecimal(5);
+        List<BigDecimal> temp = new LinkedList<>();
+        for (int i = 0; i < Weather.TEMPERATURE_COUNT; i++) {
+            temp.add(new BigDecimal(5));
         }
         w1.setTemperature(temp);
         String json = JacksonSerializer.serializeWithDate(w1);

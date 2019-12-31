@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -141,10 +140,8 @@ public class WeatherClient {
         return result;
     }
 
-    private BigDecimal[] readBigDecimalArray(String message) throws IOException {
+    private List<BigDecimal> readBigDecimalList(String message) throws IOException {
         List<BigDecimal> floats = new ArrayList<>();
-
-
 
         try {
             while (true) {
@@ -158,23 +155,19 @@ public class WeatherClient {
             // safe to ignore
         }
 
-        if (floats.size() < 24) {
+        if (floats.size() < Weather.TEMPERATURE_COUNT) {
             System.out.println("Would you like to backfill the array with the last number provided? (y/n)");
 
             String input = scanner.readLine();
             if (input.toLowerCase().equals("y")) {
                 BigDecimal v = floats.get(floats.size() - 1);
-                while (floats.size() < 24) {
+                while (floats.size() < Weather.TEMPERATURE_COUNT) {
                     floats.add(v);
                 }
             }
         }
 
-        BigDecimal[] result = new BigDecimal[floats.size()];
-        for (int i = 0; i < floats.size(); i++) {
-            result[i] = floats.get(i);
-        }
-        return result;
+        return floats;
     }
 
 
@@ -220,7 +213,7 @@ public class WeatherClient {
         location.setState(readString("Provide a State"));
 
         weather.setLocation(location);
-        weather.setTemperature(readBigDecimalArray("Enter a bunch of floats (enter non-number to end)"));
+        weather.setTemperature(readBigDecimalList("Enter a bunch of floats (enter non-number to end)"));
 
         String url = "http://" + this.host + "/weather";
         HttpEntity<Weather> request = new HttpEntity<>(weather);

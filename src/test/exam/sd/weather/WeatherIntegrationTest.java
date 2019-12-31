@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -47,10 +48,10 @@ public class WeatherIntegrationTest {
         Weather w = new Weather();
         w.setId(1234L);
         w.setDate(LocalDate.of(2020,1, 1));
-        BigDecimal[] temp = new BigDecimal[24];
+        List<BigDecimal> temp = new LinkedList<>();
 
-        for (int idx = 0; idx < temp.length; idx++) {
-            temp[idx] = new BigDecimal(idx);
+        for (int idx = 0; idx < Weather.TEMPERATURE_COUNT; idx++) {
+            temp.add(new BigDecimal(idx));
         }
         w.setTemperature(temp);
         Location l = new Location();
@@ -82,10 +83,10 @@ public class WeatherIntegrationTest {
         Weather oneToKeep = new Weather();
         oneToKeep.setId(1234L);
         oneToKeep.setDate(LocalDate.of(2020,1, 1));
-        BigDecimal[] temp = new BigDecimal[24];
+        List<BigDecimal> temp = new LinkedList<>();
 
-        for (int idx = 0; idx < temp.length; idx++) {
-            temp[idx] = new BigDecimal(idx);
+        for (int idx = 0; idx < 24; idx++) {
+            temp.add(new BigDecimal(idx));
         }
         oneToKeep.setTemperature(temp);
         Location l = new Location();
@@ -105,10 +106,10 @@ public class WeatherIntegrationTest {
         Weather oneToDelete = new Weather();
         oneToDelete.setId(4321L);
         oneToDelete.setDate(LocalDate.of(2020,1, 3));
-        temp = new BigDecimal[24];
+        temp = new LinkedList<>();
 
-        for (int idx = 0; idx < temp.length; idx++) {
-            temp[idx] = new BigDecimal(idx);
+        for (int idx = 0; idx < Weather.TEMPERATURE_COUNT; idx++) {
+            temp.add(new BigDecimal(idx));
         }
         oneToDelete.setTemperature(temp);
         oneToDelete.setLocation(l);
